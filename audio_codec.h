@@ -5,6 +5,10 @@
 #ifndef __AUDIO_CODEC_H__
 #define __AUDIO_CODEC_H__
 
+#define ADDR_CONTROL		((volatile int * const) 0xFF203040)
+#define ADDR_FIFOSPACE		(((volatile int * const) 0xFF203040) + 1)
+#define ADDR_LEFT_DATA		(((volatile int * const) 0xFF203040) + 2)
+#define ADDR_RIGHT_DATA		(((volatile int * const) 0xFF203040) + 3)
 
 /* The left and right channel values of a single sample. */
 struct sample {
@@ -20,8 +24,6 @@ struct fifospace {
 	unsigned char write_l;
 } __attribute__ ((packed));
 
-/* Convenience struct for accessing the data registers of the audio codec. */
-extern volatile struct sample * const 		codec_data;
 extern volatile struct fifospace * const 	fifospace;
 
 /* Convenience functions for checking whether read/write interrupts are pending
@@ -29,5 +31,7 @@ extern volatile struct fifospace * const 	fifospace;
 int read_is_pending(void);
 int write_is_pending(void);
 
+/* Enable read, write interrupts on the audio codec. */
+void codec_enable_interrupts();
 
 #endif /* __AUDIO_CODEC_H__ */

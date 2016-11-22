@@ -16,8 +16,8 @@ void sbuf_update_in_samples(void) {
 	unsigned int num_samples = MIN(fifospace->read_l, fifospace->read_r);
 
 	for (; num_samples > 0; num_samples--) {
-		sbuf->buf[sbuf->idx_in].left = codec_data->left;
-	    sbuf->buf[sbuf->idx_in].right = codec_data->right;
+		sbuf->buf[sbuf->idx_in].left = *ADDR_LEFT_DATA;
+	    sbuf->buf[sbuf->idx_in].right = *ADDR_RIGHT_DATA;
 
 		sbuf->idx_in++;
 		sbuf->idx_in %= sbuf->buf_len;

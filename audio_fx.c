@@ -24,9 +24,7 @@ void on_codec_interrupt() {
 	// write samples from buf to to available space
 }
 
-void read_available_samples() {
-	
-}
+
 
 void write_available_
 
