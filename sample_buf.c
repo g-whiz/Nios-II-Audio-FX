@@ -1,27 +1,25 @@
 #include "sample_buf.h"
 
 #define BUFSIZE 48000
+#define MIN(L, R)	(L <= R ? L : R)
 
-Sample sample_buf[BUFSIZE];
-SampleBuffer sbuf = {.buf = &sample_buf,
+struct sample sample_buf[BUFSIZE];
+struct sample_buffer sbuf_internal =
+				    {.buf = (struct sample * const) sample_buf,
 					 .buf_len = BUFSIZE,
 					 .idx_in = 0,
 					 .idx_out = 0};
 
-/* 
- * Returns a ptr to the next sample to output to LINE OUT and advances
- * sbuf's idx_out.
- */
-Sample *sbuf_out_next(SampleBuffer *sbuf) {
-	Sample *next = &(sbuf->buf[sbuf->idx_out])
-}
+struct sample_buffer * const sbuf = &sbuf_internal;
 
-bool sbuf_out_has_next(SampleBuffer *sbuf) {
-	return sbuf->idx_out != sbuf->idx_in;
-}
+void sbuf_update_in_samples(void) {
+	unsigned int num_samples = MIN(fifospace->read_l, fifospace->read_r);
 
-/* 
- * Returns a ptr to the next sample to read input from MIC to and advances
- * sbuf's idx_in.
- */
-Sample *sbuf_in_next(SampleBuffer *sbuf);
+	for (; num_samples > 0; num_samples--) {
+		sbuf->buf[sbuf->idx_in].left = codec_data->left;
+	    sbuf->buf[sbuf->idx_in].right = codec_data->right;
+
+		sbuf->idx_in++;
+		sbuf->idx_in %= sbuf->buf_len;
+	}
+}

@@ -2,6 +2,15 @@
 
 #define BUFSIZE 48000
 
+/* * * * * * * * * * * * * * * *
+ * PSEUDO CODE OF PASSTHROUGH: *
+ * * * * * * * * * * * * * * * *
+ *
+ * ON codec_interrupt:
+ *	IF mic_interrupt:
+ *		num_samples <- MIN(fifospace->left_in, fifospace->left_out)
+ */
+
 const sample_t audio_buf[BUFSIZE];
 int idx_i = 0;
 int idx_o = 0;

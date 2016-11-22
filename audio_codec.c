@@ -1,22 +1,28 @@
 #include "audio_codec.h"
 
-#define CONTROL(ptr)	*(ptr)
-#define FIFOSPACE(ptr)	*(ptr + 1)
-#define LEFT_DATA(ptr) 	*(ptr + 2)
-#define RIGHT_DATA(ptr) *(ptr + 3)
+#define ADDR_CONTROL		((volatile int * const) 0xFF203040)
+#define ADDR_FIFOSPACE		(((volatile int * const) 0xFF203040) + 1)
+#define ADDR_LEFT_DATA		(((volatile int * const) 0xFF203040) + 2)
+#define ADDR_RIGHT_DATA		(((volatile int * const) 0xFF203040) + 3)
 
-volatile int *audio_ptr = (int *) 0xFF203040;
+volatile int * const audio_ptr = (int *) 0xFF203040;
 
-void write_sample(Sample *s) {
-	LEFT_DATA(audio_ptr) = s->left;
-	RIGHT_DATA(audio_ptr) = s->right;
+volatile struct sample * const codec_data = 
+	(volatile struct sample * const) ADDR_LEFT_DATA;
+volatile struct fifospace * const fifospace = 
+	(volatile struct fifospace * const) ADDR_FIFOSPACE;
+
+
+int read_is_pending(void) {
+	// return the 8th bit of the audio codec's control register
+	return (1 << 8) & *ADDR_CONTROL;
 }
 
-void read_sample(Sample *s) {
-	s->left = LEFT_DATA(audio_ptr);
-	s->right = RIGHT_DATA(audio_ptr);
+int write_is_pending(void) {
+	return (1 << 9) & *ADDR_CONTROL;
 }
 
-void get_fifospace(Fifospace *fspace) {
-	*fspace = (Fifospace) FIFOSPACE(audio_ptr);
+/* Enable read, write interrupts on the audio codec. */
+void codec_enable_interrupts() {
+	*ADDR_CONTROL &= 0b11;
 }
