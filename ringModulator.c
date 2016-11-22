@@ -1,24 +1,18 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "ringModulator.h"
 
-int amplitude = 100;
-int triangleIncrement = 5;
+int amplitude = 0x10000;
+int triangleIncrement = 0x1000;
 int triangleWave = 0;
 
-typedef struct {
-	int right;
-	int left;
-} sample_t;
-
-void ringModulateSample(sample_t sample, sample_t* newSample){
+void ringModulateSample(struct sample *in_sample, struct sample *out_sample){
 
 	triangleWave += triangleIncrement;
 
 	// Start incrementing triangle wave in opposite direction
-	if (triangleWave >= amplitude || triangleWave <= amplitude*-1){
+	if (triangleWave >= amplitude || triangleWave <= amplitude*(-1)){
 		triangleIncrement *= -1;
 	}
 
-    newSample->left =  sample.left * triangleWave;
-    newSample->right = sample.right * triangleWave;
+    out_sample->left =  in_sample->left * triangleWave;
+    out_sample->right = in_sample->right * triangleWave;
 }
