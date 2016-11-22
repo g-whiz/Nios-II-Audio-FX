@@ -1,32 +1,22 @@
 #include "audio_codec.h"
 
-#define BUFSIZE 48000
+#define CONTROL(ptr)	*(ptr)
+#define FIFOSPACE(ptr)	*(ptr + 1)
+#define LEFT_DATA(ptr) 	*(ptr + 2)
+#define RIGHT_DATA(ptr) *(ptr + 3)
 
-const sample_t audio_buf[BUFSIZE];
-int idx_i = 0;
-int idx_o = 0;
+volatile int *audio_ptr = (int *) 0xFF203040;
 
-/* 
- * Called from the ISR in <INSERT-ASM-FILENAME-HERE>. 
- * At this point, interrupts should be disabled.
- */
-void on_codec_interrupt() {
-	// read available samples to buf
-	// write samples from buf to to available space
+void write_sample(Sample *s) {
+	LEFT_DATA(audio_ptr) = s->left;
+	RIGHT_DATA(audio_ptr) = s->right;
 }
 
-void read_available_samples() {
-	
+void read_sample(Sample *s) {
+	s->left = LEFT_DATA(audio_ptr);
+	s->right = RIGHT_DATA(audio_ptr);
 }
 
-void write_available_
-
-int main() {
-
-	// TODO: Enable interrupts (link asm to do this)
-	
-	int nop = 0;
-	while(1){
-		nop += 0;
-	}
+void get_fifospace(Fifospace *fspace) {
+	*fspace = (Fifospace) FIFOSPACE(audio_ptr);
 }

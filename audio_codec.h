@@ -1,22 +1,21 @@
-#include "audio_codec.h"
 
-#define CONTROL(ptr)	*(ptr)
-#define FIFOSPACE(ptr)	*(ptr + 1)
-#define LEFT_DATA(ptr) 	*(ptr + 2)
-#define RIGHT_DATA(ptr) *(ptr + 3)
 
-volatile int *audio_ptr = (int *) 0xFF203040;
+typedef struct {
+	int right;
+	int left;
+} Sample
+  __attribute__ ((packed));
 
-void write_sample(Sample *s) {
-	LEFT_DATA(audio_ptr) = s->left;
-	RIGHT_DATA(audio_ptr) = s->right;
-}
+/* Convenience struct for accessing the components of the fifospace register. */
+typedef struct {
+	unsigned char read_r;
+	unsigned char read_l;
+	unsigned char write_r;
+	unsigned char write_l;
+} Fifospace 
+  __attribute__ ((packed));
 
-void read_sample(Sample *s) {
-	s->left = LEFT_DATA(audio_ptr);
-	s->right = RIGHT_DATA(audio_ptr);
-}
+void write_sample(Sample *s);
+void read_sample(Sample *s);
 
-void get_fifospace(Fifospace *fspace) {
-	*fspace = (Fifospace) FIFOSPACE(audio_ptr);
-}
+void get_fifospace(Fifospace *fspace);
