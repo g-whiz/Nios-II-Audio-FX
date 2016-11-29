@@ -14,7 +14,7 @@
 struct sample {
 	int left;
 	int right;
-} __attribute__ ((packed));
+} __attribute__ ((aligned(8), packed));
 
 /* Convenience struct for accessing the components of the fifospace register. */
 struct fifospace {
